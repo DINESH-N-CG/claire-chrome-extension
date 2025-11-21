@@ -1,0 +1,65 @@
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 16px 16px;
+  gap: 10px;
+
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+ 
+.menu-button:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.header-icon {
+  font-size: 28px;
+}
+
+
+.header-status {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* .refresh-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.refresh-button:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+.refresh-button:active {
+  transform: rotate(180deg);
+} */

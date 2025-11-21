@@ -1,0 +1,122 @@
+.chat-input-container {
+  /* border-top: 1px solid #eee; */
+  padding: 12px;
+  flex-shrink: 0;
+  min-height: fit-content;
+}
+
+/* NEW INPUT BAR */
+.chat-input-bar {
+  display: flex;
+  align-items: center;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 8px 12px;
+  background: white;
+  gap: 10px;
+}
+
+
+
+/* Attach + Send icons inside bar */
+.chat-input-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.chat-input-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.send-icon {
+  background: #0071bd;
+  color: #ffffff;
+  border-radius: 20px;
+  width: 36px;
+  height: 36px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: transparent;
+}
+
+.send-icon:hover {
+  background: #4070b8;
+}
+
+.send-icon:hover:not(:disabled) {
+  background: #3a6eb5;
+}
+
+.send-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-input-textarea {
+  border: none !important;
+  outline: none;
+  resize: none;
+  flex-grow: 1;
+  font-size: 15px;
+  line-height: 1.4;
+  max-height: 100px;
+  background: transparent;
+  overflow-y: auto;
+}
+
+/* Hide scrollbar */
+.chat-input-textarea::-webkit-scrollbar {
+  display: none;
+}
+.chat-input-textarea {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Selected text preview */
+.selected-text-preview {
+  background: #f0f7ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 3px solid #5084ce;
+  font-size: 13px;
+}
+
+.arrow {
+  font-size: 14px;
+  color: #5084ce;
+}
+
+.preview-text {
+  flex: 1;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #94a3b8;
+}
+.preview-close:hover {
+  color: #64748b;
+}

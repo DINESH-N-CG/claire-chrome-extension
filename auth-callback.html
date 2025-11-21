@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claire - Authenticated</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family:'Segoe UI';
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .success-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+    }
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: bounce 1s ease;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    h1 {
+      color: #1a1a1a;
+      margin: 0 0 12px 0;
+      font-size: 24px;
+    }
+    p {
+      color: #666;
+      margin: 0 0 24px 0;
+    }
+    .close-info {
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-icon">✅</div>
+    <h1>Authentication Successful!</h1>
+    <p>You're all set. Returning to Claire...</p>
+    <div class="close-info">This window will close automatically</div>
+  </div>
+  
+  <script>
+    // Notify extension that authentication is complete
+    if (chrome && chrome.runtime) {
+      chrome.runtime.sendMessage({ type: 'AUTH_SUCCESS' });
+      
+      // Store authentication status
+      chrome.storage.local.set({ isAuthenticated: true }, () => {
+        // Close this tab after a short delay
+        setTimeout(() => {
+          window.close();
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
