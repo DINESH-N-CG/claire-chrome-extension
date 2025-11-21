@@ -33,13 +33,12 @@
 }
 
 .message.user .message-content {
-  background: #f0f7ff;
+  background: #e8effc;
   color: #000;
   border-radius: 14px 14px 4px 14px;
 }
 
 .message.assistant .message-content {
-  background: #f2f3f5;
   color: #111;
   border-radius: 14px 14px 14px 4px;
 }

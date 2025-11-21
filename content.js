@@ -44,7 +44,7 @@ function createSelectionTooltip() {
     z-index: 999999;
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
     display: none;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI'
     transition: all 0.2s;
     user-select: none;
     white-space: nowrap;

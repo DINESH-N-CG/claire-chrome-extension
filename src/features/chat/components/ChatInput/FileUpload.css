@@ -19,19 +19,19 @@
   font-weight: 500;
 }
 
-/* File Upload Styles */
-.attach-button {
-  background: none;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
+.attach-icon {
+  background: #edf3fa;
+  color: #0071bd;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
-  transition: all 0.2s ease;
-  border-radius: 6px;
-  margin-right: 4px;
+    border: transparent;
+
+
 }
 
 .attach-button:hover:not(:disabled) {

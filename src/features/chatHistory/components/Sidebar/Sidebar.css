@@ -57,27 +57,6 @@
   color: #6b7280;
 }
 
-.new-chat-button {
-  margin: 12px 12px;
-  padding: 9px 14px;
-  background: #5084ce;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.new-chat-button:hover {
-  background: #4070b8;
-}
-
 .sidebar-sessions {
   flex: 1;
   overflow-y: auto;

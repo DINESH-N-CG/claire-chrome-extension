@@ -23,7 +23,7 @@
   min-height: 44px;
   background: white;
   transition: border-color 0.2s ease;
-  font-family: inherit;
+  font-family: 'Segoe UI';
   overflow-y: auto;
 }
 

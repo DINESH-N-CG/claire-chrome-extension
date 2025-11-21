@@ -1,23 +1,17 @@
 import { useState } from 'react';
 
-export const Sidebar = ({ isOpen, onClose, sessions, currentSessionId, onSelectSession, onNewSession, loading }) => {
+export const Sidebar = ({ isOpen, onClose, sessions, currentSessionId, onSelectSession, loading }) => {
   return (
     <>
       {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
-      
+
       <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <h3>Chat Sessions</h3>
+          <h3>Chat History</h3>
           <button className="sidebar-close" onClick={onClose}>×</button>
         </div>
 
-        <button className="new-chat-button" onClick={onNewSession}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          New Chat
-        </button>
+        {/* NEW CHAT BUTTON REMOVED */}
 
         <div className="sidebar-sessions">
           {loading ? (
