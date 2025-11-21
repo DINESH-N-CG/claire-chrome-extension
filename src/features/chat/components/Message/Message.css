@@ -1,0 +1,67 @@
+.message {
+  width: 100%;
+  display: flex;
+  margin-bottom: 14px;
+}
+
+.message.user {
+  justify-content: flex-end !important;
+}
+
+.message.assistant {
+  justify-content: flex-start !important;
+}
+
+.message.assistant:first-child {
+  justify-content: center !important;
+}
+
+.message.assistant:first-child .message-content {
+  background: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  max-width: 100% !important;
+}
+
+.message-content {
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.message.user .message-content {
+  background: #f0f7ff;
+  color: #000;
+  border-radius: 14px 14px 4px 14px;
+}
+
+.message.assistant .message-content {
+  background: #f2f3f5;
+  color: #111;
+  border-radius: 14px 14px 14px 4px;
+}
+
+/* Context styling in user messages - ChatGPT style */
+.message-with-context {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.context-text {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+  border-left: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.user-question {
+  font-size: 15px;
+  line-height: 1.5;
+}

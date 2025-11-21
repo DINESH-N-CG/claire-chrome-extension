@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "Claire - AI Assistant",
+  "short_name": "Claire",
+  "version": "1.0.0",
+  "description": "Claire - Your intelligent AI assistant for the web.",
+  "author": "Claire",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "sidePanel",
+    "tabs",
+    "scripting",
+    "notifications"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "action": {
+    "default_title": "Open Claire AI Assistant"
+  },
+
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "commands": {
+    "toggle-claire": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A",
+        "mac": "Command+Shift+A"
+      },
+      "description": "Toggle Claire AI Assistant"
+    }
+  },
+
+  "icons": {
+    "16": "icons/claire-logo-16px.png",
+    "48": "icons/claire-logo-48px.png",
+    "128": "icons/claire-logo-128px.png"
+  }
+}

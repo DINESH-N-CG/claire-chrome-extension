@@ -1,0 +1,28 @@
+/* Project Dropdown Styles */
+.project-dropdown {
+  /* padding: 8px 16px;
+  border: 1px solid #d1d5db; */
+  border-radius: 6px;
+  background-color: white;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  max-width: 200px;
+  margin: 0 8px;
+}
+
+.project-dropdown:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.project-dropdown:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.project-dropdown option {
+  padding: 8px;
+}
