@@ -177,10 +177,10 @@ function App() {
           message,
           selectedText,
           selectedTextUrl,
-          attachedFile
+          attachedFiles
         ) => {
           resetActivity();
-          sendMessage(message, selectedText, selectedTextUrl, attachedFile);
+          sendMessage(message, selectedText, selectedTextUrl, attachedFiles);
         }}
         isProcessing={isProcessing}
         selectedText={selectedText}

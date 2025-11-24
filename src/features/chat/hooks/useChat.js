@@ -42,7 +42,7 @@ export const useChat = () => {
     setGreetingVisible(false);
   }, []);
 
-  const sendMessage = async (message, selectedText = '', selectedTextUrl = '', attachedFile = null) => {
+  const sendMessage = async (message, selectedText = '', selectedTextUrl = '', attachedFiles = []) => {
     if (!message.trim() || isProcessing) return;
 
     setIsProcessing(true);
@@ -70,7 +70,7 @@ export const useChat = () => {
       : message;
 
     try {
-      const response = await sendToAI(msgToSend, session, selectedTextUrl, attachedFile);
+      const response = await sendToAI(msgToSend, session, selectedTextUrl, attachedFiles);
       addMessage(response, 'assistant');
     } catch (error) {
       addMessage('Error occurred.', 'assistant', true);
@@ -80,7 +80,7 @@ export const useChat = () => {
     setStatus('Ready to help');
   };
 
-  const sendToAI = async (text, sessionId, selectedTextUrl = '', attachedFile = null) => {
+  const sendToAI = async (text, sessionId, selectedTextUrl = '', attachedFiles = []) => {
     // Get current project ID from storage
     const safeChrome = typeof chrome !== 'undefined' && chrome?.storage?.local;
     let projectId = 1; // default
@@ -89,8 +89,8 @@ export const useChat = () => {
       projectId = stored.currentProjectId || 1;
     }
 
-    // If file is attached, use FormData for multipart upload
-    if (attachedFile) {
+    // If files are attached, use FormData for multipart upload
+    if (attachedFiles && attachedFiles.length > 0) {
       const formData = new FormData();
       formData.append('projectId', projectId.toString());
       formData.append('session', sessionId);
@@ -98,7 +98,10 @@ export const useChat = () => {
       if (selectedTextUrl) {
         formData.append('url', selectedTextUrl);
       }
-      formData.append('file', attachedFile);
+      // Append all files
+      attachedFiles.forEach((file, index) => {
+        formData.append('files', file);
+      });
 
       const response = await fetch(CONFIG.CLAIRE_CONTROLLER_SERVER, {
         method: 'POST',
