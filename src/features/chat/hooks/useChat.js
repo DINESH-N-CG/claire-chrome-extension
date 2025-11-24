@@ -89,6 +89,30 @@ export const useChat = () => {
       projectId = stored.currentProjectId || 1;
     }
 
+    // If file is attached, use FormData for multipart upload
+    if (attachedFile) {
+      const formData = new FormData();
+      formData.append('projectId', projectId.toString());
+      formData.append('session', sessionId);
+      formData.append('message', text);
+      if (selectedTextUrl) {
+        formData.append('url', selectedTextUrl);
+      }
+      formData.append('file', attachedFile);
+
+      const response = await fetch(CONFIG.CLAIRE_CONTROLLER_SERVER, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      const data = await response.json();
+      return data.response || data.message || data.text || data.content;
+    }
+
+    // Standard JSON request without file
     const response = await fetch(CONFIG.CLAIRE_CONTROLLER_SERVER, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -97,12 +121,7 @@ export const useChat = () => {
         projectId: projectId,
         session: sessionId,
         message: text,
-        url: selectedTextUrl || undefined,
-        file: attachedFile ? {
-          name: attachedFile.name,
-          size: attachedFile.size,
-          type: attachedFile.type
-        } : undefined
+        url: selectedTextUrl || undefined
       })
     });
 

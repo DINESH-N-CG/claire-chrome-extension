@@ -1,3 +1,5 @@
+import './TypingIndicator.css';
+
 export const TypingIndicator = () => {
   return (
     <div className="message assistant">

@@ -1,2 +1,2 @@
-export { LoginPage } from './components/LoginPage/LoginPage';
-export { useAuth } from './hooks/useAuth';
+export { LoginPage } from './LoginPage';
+export { useAuth } from './useAuth';

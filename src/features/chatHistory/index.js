@@ -1,2 +1,2 @@
-export * from './components';
-export * from './hooks';
+export { Sidebar } from './Sidebar';
+export { useChatSessions } from './useChatSessions';

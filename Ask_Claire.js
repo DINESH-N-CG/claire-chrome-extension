@@ -24,6 +24,31 @@ async function uuidv4() {
 let selectionTooltip = null;
 let currentSelectedText = '';
 let tooltipTimeout = null;
+let extensionEnabled = true;
+
+// Check if extension is enabled
+async function checkExtensionEnabled() {
+  try {
+    const result = await chrome.storage.local.get(['enabled']);
+    extensionEnabled = result.enabled !== false; // Default to true if not set
+  } catch (error) {
+    extensionEnabled = true; // Default to enabled on error
+  }
+}
+
+// Listen for extension enabled/disabled state changes
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.enabled) {
+    extensionEnabled = changes.enabled.newValue !== false;
+    if (!extensionEnabled) {
+      hideSelectionTooltip();
+      currentSelectedText = '';
+    }
+  }
+});
+
+// Initialize extension state
+checkExtensionEnabled();
 
 // "Ask Claire" tooltip for text selection ONLY
 function createSelectionTooltip() {
@@ -44,7 +69,7 @@ function createSelectionTooltip() {
     z-index: 999999;
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
     display: none;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     transition: all 0.2s;
     user-select: none;
     white-space: nowrap;
@@ -136,6 +161,11 @@ function hideSelectionTooltip() {
 
 // Handle text selection
 document.addEventListener("mouseup", (e) => {
+  // Don't show tooltip if extension is disabled
+  if (!extensionEnabled) {
+    return;
+  }
+
   if (e.target.id === "claire-selection-tooltip" || 
       e.target.closest("#claire-selection-tooltip")) {
     return;

@@ -1,4 +1,6 @@
- export const WelcomeGreeting = () => {
+import './WelcomeGreeting.css';
+
+export const WelcomeGreeting = () => {
   return (
     <div className="welcome-center">
       {/* <div className="welcome-greeting">{getGreeting()}</div> */}

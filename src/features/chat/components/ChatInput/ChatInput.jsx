@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faTimes, faImage } from '@fortawesome/free-solid-svg-icons';
+import './ChatInput.css';
+import './FileUpload.css';
 
 export const ChatInput = ({ onSendMessage, isProcessing, selectedText, selectedTextUrl, selectedTextPageTitle, onClearSelectedText }) => {
   const [message, setMessage] = useState('');
-  const [attachedFile, setAttachedFile] = useState(null);
+  const [attachedFiles, setAttachedFiles] = useState([]);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -20,24 +24,24 @@ export const ChatInput = ({ onSendMessage, isProcessing, selectedText, selectedT
   }, [message]);
 
   const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAttachedFile(file);
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setAttachedFiles(prev => [...prev, ...files]);
     }
   };
 
-  const handleRemoveFile = () => {
-    setAttachedFile(null);
+  const handleRemoveFile = (index) => {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
   const handleSend = () => {
-    if ((!message.trim() && !attachedFile) || isProcessing) return;
-    onSendMessage(message, selectedText, selectedTextUrl, attachedFile);
+    if ((!message.trim() && attachedFiles.length === 0) || isProcessing) return;
+    onSendMessage(message, selectedText, selectedTextUrl, attachedFiles);
     setMessage('');
-    setAttachedFile(null);
+    setAttachedFiles([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -72,64 +76,93 @@ export const ChatInput = ({ onSendMessage, isProcessing, selectedText, selectedT
         </div>
       )}
 
-      {attachedFile && (
-        <div className="file-preview">
-          <div className="file-info">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-              <polyline points="13 2 13 9 20 9"></polyline>
-            </svg>
-            <span className="file-name">{attachedFile.name}</span>
-            <span className="file-size">({(attachedFile.size / 1024).toFixed(1)} KB)</span>
-          </div>
-          <button className="file-remove" onClick={handleRemoveFile}>×</button>
+      {attachedFiles.length > 0 && (
+        <div className="attachments-preview">
+          {attachedFiles.map((file, index) => (
+            <div key={index} className="attachment-item">
+              <div className="attachment-preview">
+                {file.type.startsWith('image/') ? (
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    className="preview-img"
+                  />
+                ) : (
+                  <FontAwesomeIcon icon={faImage} />
+                )}
+              </div>
+              <div className="attachment-meta">
+                <span className="name">{file.name}</span>
+              </div>
+              <button
+                type="button"
+                className="remove-attachment"
+                aria-label={`Remove ${file.name}`}
+                onClick={() => handleRemoveFile(index)}
+              >
+                <FontAwesomeIcon icon={faTimes} style={{ color: '#333333' }} />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      <div className="chat-input-wrapper">
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileSelect}
-          style={{ display: 'none' }}
-          accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png"
-        />
-        <button
-          className="attach-button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isProcessing}
-          title="Attach file"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-          </svg>
-        </button>
-        <textarea
-          ref={textareaRef}
-          className="chat-input"
-          placeholder="Ask me anything..."
-          rows="1"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-
-        <button
-          className="send-button"
-          onClick={handleSend}
-          disabled={(!message.trim() && !attachedFile) || isProcessing}
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+      <div className="top-row">
+        <div className="left-controls">
+          <button
+            type="button"
+            className="icon-button plus-button"
+            aria-label="Add attachment"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isProcessing}
           >
-            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-          </svg>
-        </button>
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+            accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png,image/*"
+            multiple
+          />
+        </div>
+
+        <div className="input-wrapper">
+          <textarea
+            ref={textareaRef}
+            className="message-input"
+            placeholder="Ask me anything"
+            rows="1"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onInput={adjustHeight}
+            onKeyDown={handleKeyDown}
+            disabled={isProcessing}
+          />
+        </div>
+
+        <div className="right-controls">
+          <button
+            className="send-button"
+            onClick={handleSend}
+            disabled={(!message.trim() && attachedFiles.length === 0) || isProcessing}
+            aria-label="Send message"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

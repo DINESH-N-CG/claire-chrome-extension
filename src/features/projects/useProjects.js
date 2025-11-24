@@ -24,7 +24,6 @@ export const useProjects = () => {
         const data = await response.json();
         const projectList = data.rows || data || [];
         setProjects(projectList);
-        console.log('Loaded projects:', projectList);
       } else {
         console.error('Failed to load projects:', response.status);
       }

@@ -1,7 +1,8 @@
 import { useRef, useEffect } from 'react';
-import { Message } from '../Message';
+import { Message } from '../Message/Message';
 import { WelcomeGreeting } from '../../../welcome';
-import { TypingIndicator } from '../TypingIndicator';
+import { TypingIndicator } from '../TypingIndicator/TypingIndicator';
+import './ChatMessages.css';
 
 export const ChatMessages = ({ messages, greetingVisible, isProcessing }) => {
   const messagesEndRef = useRef(null);

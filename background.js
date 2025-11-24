@@ -61,12 +61,12 @@ async function injectContentScriptIntoExistingTabs() {
         if (!results[0]?.result) {
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ['content.js']
+            files: ['Ask_Claire.js']
           });
 
           await chrome.scripting.insertCSS({
             target: { tabId: tab.id },
-            files: ['content.css']
+            files: ['Ask_Claire.css']
           });
 
           console.log('Content script injected into tab:', tab.id, tab.url);
@@ -138,6 +138,50 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.type === 'PING') {
     sendResponse({ status: 'ok', version: chrome.runtime.getManifest().version });
+    return true;
+  }
+
+  // Handle authentication success from callback page
+  if (request.type === 'AUTH_SUCCESS') {
+    console.log('Authentication successful, redirecting to extension...');
+    
+    // Set authentication status in storage
+    chrome.storage.local.set({ isAuthenticated: true }, async () => {
+      // Open the side panel
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tabs[0]) {
+        try {
+          await chrome.sidePanel.open({ windowId: tabs[0].windowId });
+          console.log('Side panel opened after authentication');
+        } catch (error) {
+          console.error('Error opening side panel after auth:', error);
+        }
+      }
+    });
+    
+    sendResponse({ success: true });
+    return true;
+  }
+
+  // Handle authentication failure from callback page
+  if (request.type === 'AUTH_FAILURE') {
+    console.log('Authentication failed:', request.error);
+    
+    // Clear any stored auth data
+    chrome.storage.local.remove(['isAuthenticated', 'user'], async () => {
+      // Open the side panel to show login page
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tabs[0]) {
+        try {
+          await chrome.sidePanel.open({ windowId: tabs[0].windowId });
+          console.log('Side panel opened to show login page after auth failure');
+        } catch (error) {
+          console.error('Error opening side panel after auth failure:', error);
+        }
+      }
+    });
+    
+    sendResponse({ success: true });
     return true;
   }
 

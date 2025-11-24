@@ -1,18 +1,53 @@
-import { useState } from 'react';
-import { Header } from './layout';
-import { ChatMessages, ChatInput, InactivityNotice } from './features/chat';
-import { Sidebar } from './features/chatHistory';
-import { LoginPage, useAuth } from './features/auth';
-import { useChat, useSelectedText } from './features/chat';
-import { useChatSessions } from './features/chatHistory';
-import { useProjects } from './features/projects';
-import { useInactivity } from './shared/hooks/useInactivity';
-import './styles/App.css';
-import './styles/ProjectDropdown.css';
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+import { Header } from "./layout";
+import {
+  ChatMessages,
+  ChatInput,
+  InactivityNotice,
+  useChat,
+  useSelectedText,
+} from "./features/chat";
+import { Sidebar, useChatSessions } from "./features/chatHistory";
+import { LoginPage } from "./features/auth";
+import { useProjects } from "./features/projects";
+import { useInactivity } from "./shared/hooks/useInactivity";
+import "./styles/App.css";
+import "./styles/ProjectDropdown.css";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isInactive, resetActivity } = useInactivity(0.5); // 0.5 minutes = 30 seconds for testing
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const API_BASE_URL = "http://localhost:8080";
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const checkAuth = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/auth/identity`, {
+        withCredentials: true,
+      });
+
+      if (response.data) {
+        await chrome.storage.local.set({
+          user: response.data,
+          isAuthenticated: true,
+        });
+        setUser(response.data);
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      setIsAuthenticated(false);
+      setUser(null);
+      await chrome.storage.local.remove(["user", "isAuthenticated"]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const {
     conversationHistory,
@@ -21,35 +56,50 @@ function App() {
     greetingVisible,
     sendMessage,
     refreshChat,
-    loadHistory
+    loadHistory,
   } = useChat();
 
-  const { selectedText, selectedTextUrl, selectedTextPageTitle, clearSelectedText } = useSelectedText();
-  
+  const {
+    selectedText,
+    selectedTextUrl,
+    selectedTextPageTitle,
+    clearSelectedText,
+  } = useSelectedText();
+
   const {
     sessions,
     currentSessionId,
     loading,
     loadSession,
     createNewSession,
-    refreshSessions
+    refreshSessions,
   } = useChatSessions();
 
   const {
     projects,
     currentProjectId,
     loading: projectsLoading,
-    switchProject
+    switchProject,
   } = useProjects();
 
-  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  useEffect(() => {
+    checkAuth();
+  }, [authLoading]);
 
+  console.log("app login", user, isAuthenticated);
   // Show loading state while checking auth
-  if (authLoading) {
+  if (isLoading) {
     return (
-      <div className="chat-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '32px', marginBottom: '16px' }}>👋</div>
+      <div
+        className="chat-container"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "32px", marginBottom: "16px" }}>👋</div>
           <div>Loading Claire...</div>
         </div>
       </div>
@@ -58,7 +108,13 @@ function App() {
 
   // Show login page if not authenticated
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return (
+      <LoginPage
+        {...{
+          setAuthLoading,
+        }}
+      />
+    );
   }
 
   const handleSelectSession = async (sessionId) => {
@@ -101,23 +157,28 @@ function App() {
         onNewSession={handleNewSession}
         loading={loading}
       />
-      
-      <Header 
+
+      <Header
         onRefresh={refreshChat}
         onToggleSidebar={handleToggleSidebar}
         projects={projects}
         currentProjectId={currentProjectId}
         onProjectChange={handleProjectChange}
       />
-      
+
       <ChatMessages
         messages={conversationHistory}
         greetingVisible={greetingVisible}
         isProcessing={isProcessing}
       />
-      
+
       <ChatInput
-        onSendMessage={(message, selectedText, selectedTextUrl, attachedFile) => {
+        onSendMessage={(
+          message,
+          selectedText,
+          selectedTextUrl,
+          attachedFile
+        ) => {
           resetActivity();
           sendMessage(message, selectedText, selectedTextUrl, attachedFile);
         }}
@@ -127,7 +188,7 @@ function App() {
         selectedTextPageTitle={selectedTextPageTitle}
         onClearSelectedText={clearSelectedText}
       />
-      
+
       {isInactive && <InactivityNotice onDismiss={resetActivity} />}
     </div>
   );

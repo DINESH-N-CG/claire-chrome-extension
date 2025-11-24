@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:8080';
 
-export const useAuth = () => {
-  const [user, setUser] = useState(null);
+
+export const useAuth = (props) => {
+  console.log("useAuth props:", props);
+  const { user, setUser, isAuthenticated, setIsAuthenticated } = props;
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Check authentication status
   const checkAuth = async () => {
@@ -15,22 +15,20 @@ export const useAuth = () => {
       const response = await axios.get(`${API_BASE_URL}/auth/identity`, {
         withCredentials: true,
       });
-      
+
       if (response.data) {
+        await chrome.storage.local.set({
+          user: response.data,
+          isAuthenticated: true,
+        });
         setUser(response.data);
         setIsAuthenticated(true);
-        
-        // Store user in chrome storage
-        await chrome.storage.local.set({ 
-          user: response.data,
-          isAuthenticated: true 
-        });
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error("Auth check failed:", error);
       setIsAuthenticated(false);
       setUser(null);
-      await chrome.storage.local.remove(['user', 'isAuthenticated']);
+      await chrome.storage.local.remove(["user", "isAuthenticated"]);
     } finally {
       setIsLoading(false);
     }
@@ -43,8 +41,9 @@ export const useAuth = () => {
       // Redirect to SSO login in a new tab
       const loginUrl = `${API_BASE_URL}/sso/login`;
       chrome.tabs.create({ url: loginUrl });
+      checkAuth();
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       setIsLoading(false);
     }
   };
@@ -52,15 +51,19 @@ export const useAuth = () => {
   // Handle logout
   const handleLogout = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
-        withCredentials: true,
-      });
-      
+      await axios.post(
+        `${API_BASE_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
       setUser(null);
       setIsAuthenticated(false);
-      await chrome.storage.local.remove(['user', 'isAuthenticated']);
+      await chrome.storage.local.remove(["user", "isAuthenticated"]);
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 

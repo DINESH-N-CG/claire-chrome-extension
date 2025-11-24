@@ -8,7 +8,7 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       align-items: center;
@@ -48,25 +48,49 @@
   </style>
 </head>
 <body>
-  <div class="success-container">
-    <div class="success-icon">✅</div>
-    <h1>Authentication Successful!</h1>
-    <p>You're all set. Returning to Claire...</p>
+  <div class="success-container" id="messageContainer">
+    <div class="success-icon" id="statusIcon">✅</div>
+    <h1 id="statusTitle">Authentication Successful!</h1>
+    <p id="statusMessage">You're all set. Returning to Claire...</p>
     <div class="close-info">This window will close automatically</div>
   </div>
   
   <script>
-    // Notify extension that authentication is complete
-    if (chrome && chrome.runtime) {
-      chrome.runtime.sendMessage({ type: 'AUTH_SUCCESS' });
+    // Check URL parameters for authentication status
+    const urlParams = new URLSearchParams(window.location.search);
+    const authStatus = urlParams.get('status');
+    const error = urlParams.get('error');
+    
+    if (authStatus === 'error' || error) {
+      // Authentication failed
+      document.getElementById('statusIcon').textContent = '❌';
+      document.getElementById('statusTitle').textContent = 'Authentication Failed';
+      document.getElementById('statusMessage').textContent = error || 'Unable to authenticate. Please try again.';
       
-      // Store authentication status
-      chrome.storage.local.set({ isAuthenticated: true }, () => {
-        // Close this tab after a short delay
-        setTimeout(() => {
-          window.close();
-        }, 2000);
-      });
+      if (chrome && chrome.runtime) {
+        chrome.runtime.sendMessage({ type: 'AUTH_FAILURE', error: error });
+        
+        // Remove any stored auth data
+        chrome.storage.local.remove(['isAuthenticated', 'user'], () => {
+          // Close this tab after showing error
+          setTimeout(() => {
+            window.close();
+          }, 3000);
+        });
+      }
+    } else {
+      // Authentication successful
+      if (chrome && chrome.runtime) {
+        chrome.runtime.sendMessage({ type: 'AUTH_SUCCESS' });
+        
+        // Store authentication status
+        chrome.storage.local.set({ isAuthenticated: true }, () => {
+          // Close this tab after a short delay
+          setTimeout(() => {
+            window.close();
+          }, 2000);
+        });
+      }
     }
   </script>
 </body>

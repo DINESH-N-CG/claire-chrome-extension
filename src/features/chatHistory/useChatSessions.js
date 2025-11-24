@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CONFIG } from '../../../shared/config';
+import { CONFIG } from '../../shared/config';
 
 const safeChrome = typeof chrome !== 'undefined' && chrome?.storage?.local;
 
@@ -38,25 +38,43 @@ export const useChatSessions = () => {
 
       if (response.ok) {
         const data = await response.json();
-        
-        console.log('Loaded sessions:', data); // Debug log
 
         transformedSessions = data.rows.map((session) => {
           const msg = session.message || '';
+          
+          // Clean up the title: remove "Context:" and "Question:" prefixes
+          let cleanTitle = msg;
+          
+          // If message has "Question:" extract just the question part
+          if (msg.includes('Question:')) {
+            const parts = msg.split('Question:');
+            cleanTitle = parts[1]?.trim() || parts[0]?.trim() || msg;
+          }
+          // If message has "Context:" but no "Question:", remove the Context part
+          else if (msg.includes('Context:')) {
+            const parts = msg.split('Context:');
+            cleanTitle = parts[1]?.trim() || parts[0]?.trim() || msg;
+          }
+          
+          // Truncate to reasonable length
+          const maxLength = 45;
+          if (cleanTitle.length > maxLength) {
+            cleanTitle = cleanTitle.substring(0, maxLength).trim() + '...';
+          }
+          
           return {
             id: session.session,
-            title: msg.length > 50 ? msg.substring(0, 50) + '...' : msg || 'Untitled Chat',
+            title: cleanTitle || 'Untitled Chat',
             date: new Date(session.createdAt).toLocaleDateString(),
-          timestamp: new Date(session.createdAt).getTime()
-        };
-      });
+            timestamp: new Date(session.createdAt).getTime()
+          };
+        });
       } else {
         console.error('Failed to load sessions:', response.status, response.statusText);
       }
 
       // Set sessions in UI
       setSessions(transformedSessions);
-      console.log('Sessions set:', transformedSessions); // Debug log
 
       // Load current session from chrome.storage
       if (safeChrome) {

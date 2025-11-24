@@ -30,8 +30,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["content.css"],
+      "js": ["Ask_Claire.js"],
+      "css": ["Ask_Claire.css"],
       "run_at": "document_end"
     }
   ],
@@ -55,5 +55,12 @@
     "16": "icons/claire-logo-16px.png",
     "48": "icons/claire-logo-48px.png",
     "128": "icons/claire-logo-128px.png"
-  }
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["auth-callback.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

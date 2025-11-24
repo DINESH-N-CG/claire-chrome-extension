@@ -12,8 +12,8 @@ export default defineConfig({
         // Copy non-React files to dist
         const files = [
           'background.js',
-          'content.js',
-          'content.css',
+          'Ask_Claire.js',
+          'Ask_Claire.css',
           'manifest.json',
           'auth-callback.html'
         ];

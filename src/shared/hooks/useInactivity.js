@@ -46,7 +46,6 @@ export const useInactivity = (timeoutMinutes = 5) => {
 
       if (timeSinceActivity >= inactiveThreshold && !isInactive) {
         setIsInactive(true);
-        console.log('User is inactive'); // Debug log
       }
     }, 1000); // Check every second
 

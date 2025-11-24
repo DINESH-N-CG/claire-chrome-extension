@@ -1,3 +1,5 @@
+import './Message.css';
+
 export const Message = ({ message }) => {
   const formatText = (text) => {
     return text
