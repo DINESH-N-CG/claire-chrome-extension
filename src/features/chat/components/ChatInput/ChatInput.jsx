@@ -1,6 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faArrowUp, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faArrowUp,
+  faCircleNotch,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 
 export const ChatInput = ({
   onSendMessage,
@@ -8,20 +13,18 @@ export const ChatInput = ({
   selectedText,
   selectedTextUrl,
   selectedTextPageTitle,
-  onClearSelectedText
+  onClearSelectedText,
 }) => {
-
-  const [message, setMessage] = useState('');
-  const [attachedFile, setAttachedFile] = useState(null);
+  const [message, setMessage] = useState("");
+const [attachments, setAttachments] = useState([]);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = 'auto';
-      const newHeight = Math.min(textarea.scrollHeight, 100);
-      textarea.style.height = newHeight + 'px';
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, 100) + "px";
     }
   };
 
@@ -30,104 +33,135 @@ export const ChatInput = ({
   }, [message]);
 
   const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAttachedFile(file);
-    }
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newFiles = Array.from(files).map((file) => ({
+      id: crypto.randomUUID(),
+      file,
+      previewURL: URL.createObjectURL(file),
+    }));
+
+    const updated = [...attachments, ...newFiles];
+    setAttachments(updated);
+
+    e.target.value = "";
   };
 
-  const handleRemoveFile = () => {
-    setAttachedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  const removeAttachment = (id) => {
+    const updated = attachments.filter((f) => f.id !== id);
+
+    const removed = attachments.find((f) => f.id === id);
+    if (removed) URL.revokeObjectURL(removed.previewURL);
+
+    setAttachments(updated);
   };
+
 
   const handleSend = () => {
-    if ((!message.trim() && !attachedFile) || isProcessing) return;
+    if (isProcessing) return;
+    if (!message.trim() && attachments.length === 0) return;
 
-    onSendMessage(message, selectedText, selectedTextUrl, attachedFile);
+    const filesOnly = attachments.map((a) => a.file);
 
-    setMessage('');
-    setAttachedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    onSendMessage(message, selectedText, selectedTextUrl, filesOnly);
+
+
+    setMessage("");
+    attachments.forEach((a) => URL.revokeObjectURL(a.previewURL));
+    setAttachments([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
+
     if (selectedText) onClearSelectedText();
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
-  const previewText = selectedText?.length > 100
-    ? selectedText.slice(0, 100) + '...'
-    : selectedText;
+  const previewText =
+    selectedText?.length > 100
+      ? selectedText.slice(0, 100) + "..."
+      : selectedText;
 
   return (
     <div className="chat-input-container">
+      {/* SELECTED TEXT PREVIEW */}
       {selectedText && (
         <div className="selected-text-preview">
           <div className="arrow">↳</div>
           <div className="preview-text">{previewText}</div>
-          <button className="preview-close" onClick={onClearSelectedText}>×</button>
+          <button className="preview-close" onClick={onClearSelectedText}>
+            ×
+          </button>
         </div>
       )}
 
-      {attachedFile && (
-        <div className="file-preview">
-          <div className="file-info">
-            <FontAwesomeIcon icon={faPlus} />
-            <span className="file-name">{attachedFile.name}</span>
-            <span className="file-size">
-              ({(attachedFile.size / 1024).toFixed(1)} KB)
-            </span>
-          </div>
-          <button className="file-remove" onClick={handleRemoveFile}>×</button>
+      {/* FILE PREVIEW LIST */}
+      {attachments.length > 0 && (
+        <div className="attachments-preview">
+          {attachments.map((a) => (
+            <div key={a.id} className="file-preview">
+              <div className="file-info">
+                <span className="file-name">{a.file.name}</span>
+                <span className="file-size">
+                  ({(a.file.size / 1024).toFixed(1)} KB)
+                </span>
+              </div>
+
+              <button className="file-remove" onClick={() => removeAttachment(a.id)}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* NEW INPUT BAR DESIGN */}
+      {/* INPUT BAR */}
       <div className="chat-input-bar">
-
-        {/* Hidden File Input */}
+        {/* HIDDEN FILE INPUT */}
         <input
           type="file"
           ref={fileInputRef}
+          multiple
           onChange={handleFileSelect}
           style={{ display: "none" }}
-          accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png"
+          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
         />
 
-        {/* Attach Icon */}
+        {/* ATTACH BUTTON */}
         <button
           className="attach-icon"
           onClick={() => fileInputRef.current?.click()}
           disabled={isProcessing}
-          title="Attach file"
+          title="Attach files"
         >
           <FontAwesomeIcon icon={faPlus} />
         </button>
 
-        {/* Text Input */}
+        {/* TEXTAREA */}
         <textarea
           ref={textareaRef}
           className="chat-input-textarea"
           placeholder="Ask me anything..."
-          rows="1"
+          rows={1}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />
 
-        {/* Send Icon (spinner when sending) */}
+        {/* SEND BUTTON */}
         <button
           className="send-icon"
           onClick={handleSend}
-          disabled={(!message.trim() && !attachedFile) || isProcessing}
+          disabled={(attachments.length === 0 && !message.trim()) || isProcessing}
         >
           {isProcessing ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
+            <FontAwesomeIcon icon={faCircleNotch} spin />
           ) : (
             <FontAwesomeIcon icon={faArrowUp} />
           )}

@@ -117,9 +117,9 @@ function App() {
       />
       
       <ChatInput
-        onSendMessage={(message, selectedText, selectedTextUrl, attachedFile) => {
+        onSendMessage={(message, selectedText, selectedTextUrl, attachments) => {
           resetActivity();
-          sendMessage(message, selectedText, selectedTextUrl, attachedFile);
+          sendMessage(message, selectedText, selectedTextUrl, attachments);
         }}
         isProcessing={isProcessing}
         selectedText={selectedText}

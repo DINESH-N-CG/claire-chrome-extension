@@ -2,13 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  padding: 16px 16px;
-  gap: 10px;
-
+  justify-content: space-between;
+  padding: 16px 20px;
+  width: 100%;
+  
 }
 
 .menu-button {
-  background: none;
+  background: white;
   border: none;
   color: #6b7280;
   cursor: pointer;
@@ -23,8 +24,8 @@
 
  
 .menu-button:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: #5286ed;
+  color: #3e71c5;
 }
 
 .header-content {
@@ -44,22 +45,30 @@
   opacity: 0.8;
 }
 
-/* .refresh-button {
-  background: none;
-  border: none;
-  color: #6b7280;
+/* New Chat button — remove border completely */
+.new-chat {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  padding: 6px;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  border-radius: 50%; /* makes it cleaner */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
 }
+
+/* Optional hover effect */
 .refresh-button:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: rgba(0,0,0,0.05);
 }
+
+/* Remove focus ring / border */
+.refresh-button:focus,
 .refresh-button:active {
-  transform: rotate(180deg);
-} */
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}

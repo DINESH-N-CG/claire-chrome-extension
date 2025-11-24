@@ -3,6 +3,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 
 export const Header = ({ onRefresh, onToggleSidebar, projects, currentProjectId, onProjectChange }) => {
   const currentProject = projects?.find(p => p.id === currentProjectId);
@@ -33,16 +34,6 @@ export const Header = ({ onRefresh, onToggleSidebar, projects, currentProjectId,
         </svg>
       </button>
 
-{/* export const Header = ({
-  onRefresh,
-  onToggleSidebar,
-  projects,
-  currentProjectId,
-  onProjectChange
-}) => {
-  return ( */}
-  
-
       <div className="header-content">
         <img
           src="icons/claire-logo.svg"
@@ -55,7 +46,7 @@ export const Header = ({ onRefresh, onToggleSidebar, projects, currentProjectId,
         <NavDropdown
           id="project-dropdown"
           title={currentProject?.name || 'Select Project'}
-          menuVariant="dark"
+          menuVariant="light"
           className="project-dropdown"
         >
           <div className="dropdown-search-wrapper" onClick={(e) => e.stopPropagation()}>
@@ -88,26 +79,11 @@ export const Header = ({ onRefresh, onToggleSidebar, projects, currentProjectId,
         </NavDropdown>
       )}
 
-      {projects && projects.length > 0 && (
-        <select
-          className="project-dropdown"
-          value={currentProjectId || ""}
-          onChange={(e) => onProjectChange(Number(e.target.value))}
-          title="Switch project"
-        >
-          {projects.map((project) => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
-      )}
-
-      {/* Replace Refresh Icon with New Chat Icon */}
+      
       <button
-        className="refresh-button"
+        className="new-chat"
         onClick={onRefresh}
-        title="Start new conversation"
+        title="New Chat"
       >
         <FontAwesomeIcon icon={faPenToSquare} size="lg" />
       </button>

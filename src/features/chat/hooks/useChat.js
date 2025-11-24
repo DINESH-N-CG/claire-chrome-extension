@@ -42,7 +42,7 @@ export const useChat = () => {
     setGreetingVisible(false);
   }, []);
 
-  const sendMessage = async (message, selectedText = '', selectedTextUrl = '', attachedFile = null) => {
+  const sendMessage = async (message, selectedText = '', selectedTextUrl = '', attachments = null) => {
     if (!message.trim() || isProcessing) return;
 
     setIsProcessing(true);
@@ -70,7 +70,7 @@ export const useChat = () => {
       : message;
 
     try {
-      const response = await sendToAI(msgToSend, session, selectedTextUrl, attachedFile);
+      const response = await sendToAI(msgToSend, session, selectedTextUrl, attachments);
       addMessage(response, 'assistant');
     } catch (error) {
       addMessage('Error occurred.', 'assistant', true);
@@ -80,7 +80,7 @@ export const useChat = () => {
     setStatus('Ready to help');
   };
 
-  const sendToAI = async (text, sessionId, selectedTextUrl = '', attachedFile = null) => {
+  const sendToAI = async (text, sessionId, selectedTextUrl = '', attachments = null) => {
     // Get current project ID from storage
     const safeChrome = typeof chrome !== 'undefined' && chrome?.storage?.local;
     let projectId = 1; // default
@@ -98,10 +98,10 @@ export const useChat = () => {
         session: sessionId,
         message: text,
         url: selectedTextUrl || undefined,
-        file: attachedFile ? {
-          name: attachedFile.name,
-          size: attachedFile.size,
-          type: attachedFile.type
+        file: attachments ? {
+          name: attachments.name,
+          size: attachments.size,
+          type: attachments.type
         } : undefined
       })
     });
